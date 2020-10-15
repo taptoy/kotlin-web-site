@@ -467,6 +467,34 @@ def add_header(request):
     return request
 
 
+DIST_PATH = "./dist"
+
+
+def get_pages():
+    frozen = freezer._generate_all_urls()
+
+    frozen_dict = dict()
+
+    for url, type in frozen:
+        frozen_dict[url] = type
+
+    paths = []
+
+    if (os.path.isdir(DIST_PATH)):
+        for root, dirnames, filenames in os.walk(DIST_PATH):
+            for filename in filenames:
+                prefix_path = root[len(DIST_PATH):]
+                if not prefix_path: prefix_path = "/"
+
+                url = path.join(prefix_path, filename)
+
+                paths.append((url, frozen_dict.get(url, None)))
+                if filename == "index.html":
+                    paths.append((prefix_path, frozen_dict.get(prefix_path, None)))
+
+    return paths if len(paths) > 0 else frozen
+
+
 if __name__ == '__main__':
     print("\n\n\nRunning new KotlinWebSite generator/dev-mode:\n")
 
@@ -505,7 +533,7 @@ if __name__ == '__main__':
                     sys.stderr.write(error + '\n')
                 sys.exit(-1)
         elif argv_copy[1] == "index":
-            build_search_indices(freezer._generate_all_urls(), pages)
+            build_search_indices(get_pages(), pages)
         else:
             print("Unknown argument: " + argv_copy[1])
             sys.exit(1)

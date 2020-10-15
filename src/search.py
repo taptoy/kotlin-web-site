@@ -210,7 +210,7 @@ def build_search_indices(site_structure, pages):
                 breadcrumbs.extract()
             type = "Standard Library" if "jvm/stdlib" in url else "Kotlin Test"
             index_objects += get_page_index_objects(page_info['content'], url, page_path, full_name, type, page_views)
-        elif endpoint.endswith("_redirect"): continue
+        elif endpoint and endpoint.endswith("_redirect"): continue
         else:
             client = app.test_client()
             content = client.get(url, follow_redirects=True)
@@ -222,8 +222,11 @@ def build_search_indices(site_structure, pages):
             title = title_node.text
 
             content = parsed.find("div", {"class": "page-content"})
+
             if content is None:
                 content = parsed.find("article", {"class": "page-content"})
+            if content is None:
+                content = parsed.find("article", {"class": "article"})
 
             if content is None:
                 index_objects.append({
