@@ -228,10 +228,12 @@ def build_search_indices(site_structure, pages):
             if content is None:
                 content = parsed.find("article", {"class": "article"})
 
+            page_default_type = 'Page'
+
             if content is None:
                 index_objects.append({
                     'objectID': page_path,
-                    'type': 'Page',
+                    'type': page_default_type,
                     'headings': title,
                     'url': url,
                     'content': '',
@@ -243,7 +245,7 @@ def build_search_indices(site_structure, pages):
                     url,
                     page_path,
                     title,
-                    "Page",
+                    page_default_type,
                     page_views
                 )
     print("Index objects successfully built")
